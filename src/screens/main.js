@@ -99,11 +99,11 @@ export default class main extends Component {
             arrowColor: 'green',
           }}
         />
-
+        <View>
         <Text>Export Your Timesheet</Text>
-
-
-        <Button title="Select Date Period" onPress={this.openCalendar}></Button>
+        </View>
+        
+        <Button style={{backgroundColor: '#424242', color: 'yellow'}}  title="Select Date Period" onPress={this.openCalendar}></Button>
         <Calendar2
           i18n="en"
           ref={(calendar) => { this.calendar = calendar; }}
