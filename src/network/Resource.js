@@ -41,7 +41,6 @@ class Resource {
       "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
       "Content-Type": "application/json",
     }
-
     let endPoint = URI.RESOURCE + URI.ENDPOINT_EDIT_TASK.replace(/{(taskId)}/, taskId)
     let res = await Request.put(endPoint, header, JSON.stringify(body));
     
@@ -61,6 +60,79 @@ class Resource {
     }
 
     let endPoint = URI.RESOURCE + URI.ENDPOINT_DELETE_TASK.replace(/{(taskId)}/, taskId)
+    let res = await Request.delete(endPoint, header);
+    
+    return new Promise((resolve, reject) => {
+      try{
+        resolve(res)
+      } catch (err) {
+        reject("An error occurred")
+      }
+    });
+  }
+
+  async getTimesheet(){
+    const header = {
+      "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
+    }
+    let res = await Request.get(URI.RESOURCE + URI.ENDPOINT_GET_TIMESHEET, header);
+    
+    return new Promise((resolve, reject) => {
+      try{
+        resolve(res.data)
+      } catch (err) {
+        reject("An error occurred")
+      }
+    });
+  }
+
+  async createTimesheet(body){
+    const header = {
+      "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
+      "Content-Type": "application/json",
+    }
+
+    console.log(JSON.stringify(body))
+
+    let res = await Request.post(URI.RESOURCE + URI.ENDPOINT_CREATE_TIMESHEET, header, JSON.stringify(body));
+    
+    return new Promise((resolve, reject) => {
+      try{
+        resolve(res)
+      } catch (err) {
+        reject("An error occurred")
+      }
+    });
+  }
+
+  async editTimesheet(body, timesheetId){
+    const header = {
+      "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
+      "Content-Type": "application/json",
+    }
+
+
+
+    
+    let endPoint = URI.RESOURCE + URI.ENDPOINT_EDIT_TIMESHEET.replace(/{(timesheetId)}/, timesheetId)
+    let res = await Request.put(endPoint, header, JSON.stringify(body));
+    
+    return new Promise((resolve, reject) => {
+      try{
+        resolve(res)
+      } catch (err) {
+        reject("An error occurred")
+      }
+    });
+  }
+
+  async deteleTimesheet(timesheetId){
+    const header = {
+      "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
+      "Content-Type": "application/json",
+    }
+
+    let endPoint = URI.RESOURCE + URI.ENDPOINT_DELETE_TIMESHEET.replace(/{(timesheetId)}/, timesheetId)
     let res = await Request.delete(endPoint, header);
     
     return new Promise((resolve, reject) => {

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Text, View, StyleSheet, TextInput, Image, TouchableOpacity,Button, FormInput, ScrollView, Label  } from 'react-native'
 import Dialog from "react-native-dialog";
 import Moment from 'moment';
+import Resource from '../network/Resource'
 
 
 export default class profile extends Component {
@@ -11,8 +12,10 @@ export default class profile extends Component {
       //defauilt value of the date time
       date: '',
       currentTime: 0,
-      isStarted: false
-    };
+      isStarted: false,
+      SprintId : 1,
+      TaskName : ""
+    }
   }
 
   state = {
@@ -54,6 +57,29 @@ export default class profile extends Component {
       )
     }
   }
+//Task
+  submitTask(){
+    let body = {
+      "SprintId" : this.state.SprintId,
+      "TaskName" : this.state.TaskName
+    }
+
+    Resource.createTask(body)
+    .then((res) => {
+      this.resetForm();
+      alert("Submit Sukses")
+    })
+    .catch((err) => {
+      alert(JSON.stringify(err))
+    })
+  }
+
+  resetForm(){
+    this.setState({
+      // SprintId : 1,
+      TaskName : ""
+    })
+  }
 
   render() {
     return (
@@ -88,15 +114,16 @@ export default class profile extends Component {
               {/* Inputan */}
       <View>
                 <TextInput style={styles.inputtask}
-                    placeholder="Task"
+                    value={this.state.TaskName}
+                    placeholder="TaskName"
+                    onChangeText={(TaskName) => this.setState({TaskName})}
                     maxLength={20}/>
                     
-          <TouchableOpacity style={{marginTop: 8, width:100, height:5, marginLeft:10}} onPress={() => this.submitTask()}>
-          <View style={{backgroundColor:"#006183", padding: 10,}}>
+                    <TouchableOpacity style={{marginTop: 20, marginLeft:10, marginRight:250}} onPress={() => this.submitTask()}>
+          <View style={{backgroundColor:"#006183", padding: 10}}>
             <Text style={{color:"#FFF", textAlign:"center"}}>SUBMIT</Text>
           </View>
         </TouchableOpacity>
-
               </View>
               
               {/* History Today */}
