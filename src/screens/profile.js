@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, TextInput, Image, TouchableOpacity,Button, FormInput, ScrollView, Label  } from 'react-native'
+import { Text, View, StyleSheet, TextInput, Image, TouchableOpacity,Button, FormInput, ScrollView, Label, FlatList  } from 'react-native'
 import Dialog from "react-native-dialog";
 import Moment from 'moment';
 import Resource from '../network/Resource'
@@ -91,7 +91,7 @@ export default class profile extends Component {
     
     Resource.getTask()
     .then((res) => {
-      this.setState({loading: false, data: res.result})
+      this.setState({loading: false, data: res.data})
     })
     .catch((err) => {
       alert(err)
@@ -126,14 +126,21 @@ export default class profile extends Component {
               {this.state.date < 24 ? `Good Morning` : `Good Evening`}
               </Text>
       </View> 
-      
+
+  {/* TASK */}
         <View style={{marginBottom :5, marginTop:10., padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
+            <FlatList
+              refreshing={this.state.loading}
+              onRefresh={() => this.getData()}
+              data={this.state.data}
+              renderItem={({item, index}) => ( 
+                <View>
                 <View style={{flex:1}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1,height :30, width :30, justifyContent:"center", alignItems:"center"}}>100
+                  <Text style={{ borderRadius: 1,borderWidth:1,height :30, width :30, justifyContent:"center", alignItems:"center"}}>{item.id}
                   </Text>
                 </View>
                 <View style={{flex:9}}>
-                  <Text style={{marginLeft: 10, borderRadius: 1,borderWidth:1, height :30}} >Membuat Timesheet</Text>
+                  <Text style={{marginLeft: 10, borderRadius: 1,borderWidth:1,width :100, height :30}} >{item.taskName}</Text>
                 </View>
                 <TouchableOpacity style={{marginHorizontal:20}} onPress={() => {
                   this.setState({
@@ -145,8 +152,13 @@ export default class profile extends Component {
                     {this.btnPlay()}
                   </View>
                 </TouchableOpacity>
-              </View>
-              {/* Inputan */}
+                </View>
+              )}
+            />
+        </View>
+              
+
+{/* INPUTAN TASK */}
       <View>
                 <TextInput style={styles.inputtask}
                     value={this.state.TaskName}
