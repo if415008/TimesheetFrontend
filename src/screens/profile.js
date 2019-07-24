@@ -134,13 +134,13 @@ export default class profile extends Component {
               onRefresh={() => this.getData()}
               data={this.state.data}
               renderItem={({item, index}) => ( 
-                <View>
+                <ScrollView>
+                <View style={{marginBottom:1, padding:5, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
                 <View style={{flex:1}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1,height :30, width :30, justifyContent:"center", alignItems:"center"}}>{item.id}
-                  </Text>
+                  <Text>{item.id}</Text>
                 </View>
-                <View style={{flex:9}}>
-                  <Text style={{marginLeft: 10, borderRadius: 1,borderWidth:1,width :100, height :30}} >{item.taskName}</Text>
+                <View style={{flex:5}}>
+                  <Text>{item.taskName}</Text>
                 </View>
                 <TouchableOpacity style={{marginHorizontal:20}} onPress={() => {
                   this.setState({
@@ -153,6 +153,7 @@ export default class profile extends Component {
                   </View>
                 </TouchableOpacity>
                 </View>
+                </ScrollView>
               )}
             />
         </View>
