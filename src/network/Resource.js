@@ -2,6 +2,8 @@ import Request from "./Request";
 import URI from "../config/Uri"
 
 class Resource {
+
+  //TASK
   async getTask(){
     const header = {
       "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
@@ -71,6 +73,7 @@ class Resource {
     });
   }
 
+//TIMESHEET
   async getTimesheet(){
     const header = {
       "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
@@ -110,9 +113,6 @@ class Resource {
       "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
       "Content-Type": "application/json",
     }
-
-
-
     
     let endPoint = URI.RESOURCE + URI.ENDPOINT_EDIT_TIMESHEET.replace(/{(timesheetId)}/, timesheetId)
     let res = await Request.put(endPoint, header, JSON.stringify(body));

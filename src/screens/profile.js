@@ -4,7 +4,6 @@ import Dialog from "react-native-dialog";
 import Moment from 'moment';
 import Resource from '../network/Resource'
 
-
 export default class profile extends Component {
   constructor(props) {
     super(props);
@@ -12,10 +11,14 @@ export default class profile extends Component {
       //defauilt value of the date time
       date: '',
       currentTime: 0,
-      isStarted: false,
+      isStarted: [],
       SprintId : 1,
-      TaskName : "",
+      TaskName : '',
+      TaskId :1,
+      StartTime :'',
+      EndTime :'',
       loading: true,
+      loadingTimesheet: true,
       data: []
     }
   }
@@ -48,11 +51,13 @@ export default class profile extends Component {
         date + '/' + month + '/' + year,
     });
     this.getData();
+    this.getDataTimesheet();
   }
 
-  //Play/Stop
-  btnPlay(){
-    if(this.state.isStarted){
+  // TIMESHEET
+  //Create Timesheet
+  btnPlay(index){
+    if(this.state.isStarted[index]){
       return (
         <Image style={{width: 35, height:35}} source={require("../assets/images/stop.png")}/>
       )
@@ -62,6 +67,107 @@ export default class profile extends Component {
       )
     }
   }
+  
+  resetForm(){
+    this.setState({
+      // SprintId : 1,
+      StartTime : "",
+      EndTime : ""
+    })
+  }
+
+  onPlayPress(index){
+
+    let startedList = this.state.isStarted
+
+    let isThisTaskStarted = startedList[index];
+
+    if(!isThisTaskStarted){
+      //Pangggil Endpoint Start
+      startedList[index] = true
+    } else {
+      //panggil endpoint stop
+      startedList[index] = false
+    }
+
+    let newObj = {
+      "taskName": "task baru",
+      "timesheetDate": "2019-07-19T03:20:06.463+00:00",
+      "startTime": "2019-07-19T03:20:06.463+00:00",
+      "endTime": "2019-07-19T03:20:06.463+00:00",
+      "totalTimeByTask": 0,
+      "totalTimeToday": 0,
+      "employeeId": 1,
+      "employee": null,
+      "projectId": 1,
+      "sprintId": 1,
+      "taskId": 1,
+      "task": null,
+      "id": 1,
+      "created": "2019-07-19T10:21:20.8190729+07:00",
+      "createdBy": "Unknown",
+      "modified": null,
+      "modifiedBy": null
+    }
+
+    let dataTimeSheet = this.state.dataTimeSheet
+
+    dataTimeSheet.push(newObj);
+
+    this.setState({isStarted : startedList, dataTimeSheet:dataTimeSheet})
+
+    // alert(Moment().format("hh:mm:ss"))
+    
+    let body={
+      "StartTime" : Moment().format("HH:mm:ss"),
+      "EndTime" : this.state.EndTime,
+      "TaskId" : this.state.TaskId
+    }
+    
+
+    // alert(JSON.stringify(body))
+    // Resource.createTimesheet(body)
+    // .then((res) => {
+    //   this.resetForm();
+    //   alert("Sukses")
+    // })
+    // .catch((err) => {
+    //   alert(JSON.stringify(err))
+    // })
+  }
+
+//Get Timesheet
+getDataTimesheet(){
+  this.setState({loading: true})
+  
+  Resource.getTimesheet()
+  .then((res) => {
+    this.setState({loadingTimesheet: false, dataTimeSheet: res.data})
+  })
+  .catch((err) => {
+    alert(err)
+  })
+}
+
+deleteTimesheet(timesheet){
+  let id = timesheet.id
+
+  Resource.deleteTimesheet(id)
+  .then((res) => {
+    alert("Berhasil di delete")
+    this.deleteItemById(timesheet.id)
+  })
+  .catch((err) => {
+    alert(err)
+  })
+}
+
+deleteItemById(id){
+  const filteredData = this.state.data.filter(item => item.id !== id);
+  this.setState({ data: filteredData });
+}
+
+//TASK
 //Create Task
   submitTask(){
     let body = {
@@ -92,7 +198,12 @@ export default class profile extends Component {
     
     Resource.getTask()
     .then((res) => {
-      this.setState({loading: false, data: res.data})
+      let started = []
+      res.data.map((d) => {
+        started.push(false)
+      })
+
+      this.setState({loading: false, data: res.data, isStarted: started})
     })
     .catch((err) => {
       alert(err)
@@ -143,14 +254,9 @@ export default class profile extends Component {
                 <View style={{flex:5}}>
                   <Text>{item.taskName}</Text>
                 </View>
-                <TouchableOpacity style={{marginHorizontal:20}} onPress={() => {
-                  this.setState({
-                    isStarted : !this.state.isStarted
-                  })
-                  alert(Moment().format("hh:mm:ss"))
-                  }}>
+                <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
                   <View style={{backgroundColor:"#006183", padding:3, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    {this.btnPlay()}
+                    {this.btnPlay(index)}
                   </View>
                 </TouchableOpacity>
                 
@@ -176,6 +282,7 @@ export default class profile extends Component {
         </TouchableOpacity>
               </View>
               
+{/* HISTORY TIMESHEET */}
               {/* History Today */}
               <View style={styles.history}>
                 <Text style={styles.historyfont}>History Today</Text>
@@ -195,16 +302,22 @@ export default class profile extends Component {
                 </View>
                 </View>
                 {/*Label*/}
-                <View style={{marginTop :1, padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
+          <View>
+          <FlatList
+              refreshing={this.state.loadingTimesheet}
+              onRefresh={() => this.getDataTimesheet()}
+              data={this.state.dataTimeSheet}
+              renderItem={({item, index}) => ( 
+            <View style={{marginTop :1, padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
                 <View style={{flex:4}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :85, height :30, justifyContent:"center", alignItems:"center"}}>100
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :85, height :30, justifyContent:"center", alignItems:"center"}}>{item.taskName}
                   </Text>
                 </View>
                 <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>12.30</Text>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{item.startTime}</Text>
                 </View>
                 <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>24.30 </Text>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{item.endTime}</Text>
                 </View>
                 <View style={{flex:2}}>
                   <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>10 </Text>
@@ -255,6 +368,9 @@ export default class profile extends Component {
                   </View>
                 </TouchableOpacity>
               </View>
+             )}
+             />
+          </View> 
               </View>
               
               {/* History Yesterday */}
