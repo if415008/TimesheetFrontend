@@ -14,7 +14,9 @@ export default class profile extends Component {
       currentTime: 0,
       isStarted: false,
       SprintId : 1,
-      TaskName : ""
+      TaskName : "",
+      loading: true,
+      data: []
     }
   }
 
@@ -44,8 +46,10 @@ export default class profile extends Component {
       date:
         date + '/' + month + '/' + year,
     });
+    this.getData();
   }
 
+  //Play/Stop
   btnPlay(){
     if(this.state.isStarted){
       return (
@@ -57,7 +61,7 @@ export default class profile extends Component {
       )
     }
   }
-//Task
+//Create Task
   submitTask(){
     let body = {
       "SprintId" : this.state.SprintId,
@@ -81,6 +85,37 @@ export default class profile extends Component {
     })
   }
 
+  // Get Task
+  getData(){
+    this.setState({loading: true})
+    
+    Resource.getTask()
+    .then((res) => {
+      this.setState({loading: false, data: res.result})
+    })
+    .catch((err) => {
+      alert(err)
+    })
+  }
+
+  deleteTask(task){
+    let id = task.id
+
+    Resource.deteleTask(id)
+    .then((res) => {
+      alert("Berhasil di delete")
+      this.deleteItemById(task.id)
+    })
+    .catch((err) => {
+      alert(err)
+    })
+  }
+
+  deleteItemById(id){
+    const filteredData = this.state.data.filter(item => item.id !== id);
+    this.setState({ data: filteredData });
+  }
+
   render() {
     return (
       <ScrollView>
@@ -98,7 +133,7 @@ export default class profile extends Component {
                   </Text>
                 </View>
                 <View style={{flex:9}}>
-                  <Text style={{marginLeft: 10, borderRadius: 1,borderWidth:1, height :30}}>Membuat Timesheet</Text>
+                  <Text style={{marginLeft: 10, borderRadius: 1,borderWidth:1, height :30}} >Membuat Timesheet</Text>
                 </View>
                 <TouchableOpacity style={{marginHorizontal:20}} onPress={() => {
                   this.setState({
