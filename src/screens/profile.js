@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, TextInput, Image, TouchableOpacity,Button, FormInput, ScrollView, Label, FlatList  } from 'react-native'
+import { Text, View, StyleSheet, TextInput, Image, TouchableOpacity, Button, FormInput, ScrollView, Label, FlatList } from 'react-native'
 import Dialog from "react-native-dialog";
 import Moment from 'moment';
 import Resource from '../network/Resource'
+import DatePicker from 'react-native-datepicker'
 
 export default class profile extends Component {
   constructor(props) {
@@ -12,17 +13,18 @@ export default class profile extends Component {
       date: '',
       currentTime: 0,
       isStarted: [],
-      SprintId : 1,
-      TaskName : '',
-      TaskId :1,
-      StartTime :'',
-      EndTime :'',
+      SprintId: 1,
+      TaskName: '',
+      TaskId: 1,
+      StartTime: '',
+      EndTime: '',
       loading: true,
       loadingTimesheet: true,
-      data: []
+      data: [],
+      isVisible: false
     }
   }
-  
+
 
   state = {
     isModalVisible: false
@@ -31,12 +33,12 @@ export default class profile extends Component {
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible })
 
-    state = {
-      isModal: false
-    };
-  
+  state = {
+    isModal: false
+  };
+
   toggleModal = () =>
-      this.setState({ isModal: !this.state.isModal })
+    this.setState({ isModal: !this.state.isModal })
 
   componentDidMount() {
     var that = this;
@@ -56,33 +58,33 @@ export default class profile extends Component {
 
   // TIMESHEET
   //Create Timesheet
-  btnPlay(index){
-    if(this.state.isStarted[index]){
+  btnPlay(index) {
+    if (this.state.isStarted[index]) {
       return (
-        <Image style={{width: 35, height:35}} source={require("../assets/images/stop.png")}/>
+        <Image style={{ width: 35, height: 35 }} source={require("../assets/images/stop.png")} />
       )
     } else {
       return (
-        <Image style={{width: 45, height:45, tintColor:"#FFF"}} source={require("../assets/images/play.png")}/>
+        <Image style={{ width: 45, height: 45, tintColor: "#FFF" }} source={require("../assets/images/play.png")} />
       )
     }
   }
-  
-  resetForm(){
+
+  resetForm() {
     this.setState({
       // SprintId : 1,
-      StartTime : "",
-      EndTime : ""
+      StartTime: "",
+      EndTime: ""
     })
   }
 
-  onPlayPress(index){
+  onPlayPress(index) {
 
     let startedList = this.state.isStarted
 
     let isThisTaskStarted = startedList[index];
 
-    if(!isThisTaskStarted){
+    if (!isThisTaskStarted) {
       //Pangggil Endpoint Start
       startedList[index] = true
     } else {
@@ -114,16 +116,16 @@ export default class profile extends Component {
 
     dataTimeSheet.push(newObj);
 
-    this.setState({isStarted : startedList, dataTimeSheet:dataTimeSheet})
+    this.setState({ isStarted: startedList, dataTimeSheet: dataTimeSheet })
 
     // alert(Moment().format("hh:mm:ss"))
-    
-    let body={
-      "StartTime" : Moment().format("HH:mm:ss"),
-      "EndTime" : this.state.EndTime,
-      "TaskId" : this.state.TaskId
+
+    let body = {
+      "StartTime": Moment().format("HH:mm:ss"),
+      "EndTime": this.state.EndTime,
+      "TaskId": this.state.TaskId
     }
-    
+
 
     // alert(JSON.stringify(body))
     // Resource.createTimesheet(body)
@@ -136,94 +138,94 @@ export default class profile extends Component {
     // })
   }
 
-//Get Timesheet
-getDataTimesheet(){
-  this.setState({loading: true})
-  
-  Resource.getTimesheet()
-  .then((res) => {
-    this.setState({loadingTimesheet: false, dataTimeSheet: res.data})
-  })
-  .catch((err) => {
-    alert(err)
-  })
-}
+  //Get Timesheet
+  getDataTimesheet() {
+    this.setState({ loading: true })
 
-deleteTimesheet(timesheet){
-  let id = timesheet.id
+    Resource.getTimesheet()
+      .then((res) => {
+        this.setState({ loadingTimesheet: false, dataTimeSheet: res.data })
+      })
+      .catch((err) => {
+        alert(err)
+      })
+  }
 
-  Resource.deleteTimesheet(id)
-  .then((res) => {
-    alert("Berhasil di delete")
-    this.deleteItemById(timesheet.id)
-  })
-  .catch((err) => {
-    alert(err)
-  })
-}
+  deleteTimesheet(timesheet) {
+    let id = timesheet.id
 
-deleteItemById(id){
-  const filteredData = this.state.data.filter(item => item.id !== id);
-  this.setState({ data: filteredData });
-}
+    Resource.deleteTimesheet(id)
+      .then((res) => {
+        alert("Berhasil di delete")
+        this.deleteItemById(timesheet.id)
+      })
+      .catch((err) => {
+        alert(err)
+      })
+  }
 
-//TASK
-//Create Task
-  submitTask(){
+  deleteItemById(id) {
+    const filteredData = this.state.data.filter(item => item.id !== id);
+    this.setState({ data: filteredData });
+  }
+
+  //TASK
+  //Create Task
+  submitTask() {
     let body = {
-      "SprintId" : this.state.SprintId,
-      "TaskName" : this.state.TaskName
+      "SprintId": this.state.SprintId,
+      "TaskName": this.state.TaskName
     }
 
     Resource.createTask(body)
-    .then((res) => {
-      this.resetForm();
-      alert("Submit Sukses")
-    })
-    .catch((err) => {
-      alert(JSON.stringify(err))
-    })
+      .then((res) => {
+        this.resetForm();
+        alert("Submit Sukses")
+      })
+      .catch((err) => {
+        alert(JSON.stringify(err))
+      })
   }
 
-  resetForm(){
+  resetForm() {
     this.setState({
       // SprintId : 1,
-      TaskName : ""
+      TaskName: ""
     })
   }
 
   // Get Task
-  getData(){
-    this.setState({loading: true})
-    
-    Resource.getTask()
-    .then((res) => {
-      let started = []
-      res.data.map((d) => {
-        started.push(false)
-      })
+  getData() {
+    this.setState({ loading: true })
 
-      this.setState({loading: false, data: res.data, isStarted: started})
-    })
-    .catch((err) => {
-      alert(err)
-    })
+    Resource.getTask()
+      .then((res) => {
+        let started = []
+        res.data.map((d) => {
+          started.push(false)
+        })
+
+        this.setState({ loading: false, data: res.data, isStarted: started })
+      })
+      .catch((err) => {
+        alert(err)
+      })
   }
 
-  deleteTask(task){
+  deleteTask(task) {
     let id = task.id
 
     Resource.deteleTask(id)
-    .then((res) => {
-      alert("Berhasil di delete")
-      this.deleteItemById(task.id)
-    })
-    .catch((err) => {
-      alert(err)
-    })
+      .then((res) => {
+        alert("Berhasil di delete")
+        this.deleteItemById(task.id)
+      })
+      .catch((err) => {
+        alert(err)
+      })
   }
 
-  deleteItemById(id){
+  deleteItemById(id) {
     const filteredData = this.state.data.filter(item => item.id !== id);
     this.setState({ data: filteredData });
   }
@@ -231,223 +233,382 @@ deleteItemById(id){
   render() {
     return (
       <ScrollView>
-      <View>
-         <View style={[styles.view, styles.withBottomBorder]}>
-              <Text style={styles.title}> 
+        <View>
+          <View style={[styles.view, styles.withBottomBorder]}>
+            <Text style={styles.title}>
               {this.state.date} &nbsp;
               {this.state.date < 24 ? `Good Morning` : `Good Evening`}
-              </Text>
-      </View> 
+            </Text>
+          </View>
 
-  {/* TASK */}
-        <View style={{marginBottom :5, marginTop:10., padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
+          {/* TASK */}
+          <View style={{ marginBottom: 5, marginTop: 10., padding: 10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row" }}>
             <FlatList
+
               refreshing={this.state.loading}
               onRefresh={() => this.getData()}
               data={this.state.data}
-              renderItem={({item, index}) => ( 
+              renderItem={({ item, index }) => (
                 <ScrollView>
-                <View style={{marginBottom:1, padding:5, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
-                <View style={{flex:1}}>
-                  <Text>{item.id}</Text>
-                </View>
-                <View style={{flex:5}}>
-                  <Text>{item.taskName}</Text>
-                </View>
-                <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
-                  <View style={{backgroundColor:"#006183", padding:3, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    {this.btnPlay(index)}
+                  <View style={{ marginBottom: 1, padding: 5, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row" }}>
+
+                    <View style={{ flex: 5 }}>
+                      <Text>{item.taskName}</Text>
+                    </View>
+                    <TouchableOpacity style={{ marginHorizontal: 20 }} onPress={() => this.onPlayPress(index)}>
+                      <View style={{ backgroundColor: "#006183", padding: 3, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                        {this.btnPlay(index)}
+                      </View>
+                    </TouchableOpacity>
+
                   </View>
-                </TouchableOpacity>
-                
-                </View>
                 </ScrollView>
               )}
             />
-        </View>
-              
-
-{/* INPUTAN TASK */}
-      <View>
-                <TextInput style={styles.inputtask}
-                    value={this.state.TaskName}
-                    placeholder="TaskName"
-                    onChangeText={(TaskName) => this.setState({TaskName})}
-                    maxLength={20}/>
-                    
-                    <TouchableOpacity style={{marginTop: 20, marginLeft:10, marginRight:250}} onPress={() => this.submitTask()}>
-          <View style={{backgroundColor:"#006183", padding: 10}}>
-            <Text style={{color:"#FFF", textAlign:"center"}}>SUBMIT</Text>
           </View>
-        </TouchableOpacity>
-              </View>
-              
-{/* HISTORY TIMESHEET */}
-              {/* History Today */}
-              <View style={styles.history}>
-                <Text style={styles.historyfont}>History Today</Text>
-                <View style={{marginBottom :1, padding:10, flexDirection: "row"}}>
-                <View style={{marginLeft :5}}>
-                  <Text style={{width :85, height :15, justifyContent:"center", alignItems:"center"}}>Task
-                  </Text>
-                </View>
-                <View style={{marginLeft :5}}>
-                  <Text style={{width :40, height :15}}>Start</Text>
-                </View>
-                <View style={{marginLeft :8}}>
-                  <Text style={{ width :40, height :15}}>End </Text>
-                </View>
-                <View style={{marginLeft :5}}>
-                  <Text style={{ width :35, height :15}}>Total </Text>
-                </View>
-                </View>
-                {/*Label*/}
+
+
+          {/* INPUTAN TASK */}
           <View>
-          <FlatList
-              refreshing={this.state.loadingTimesheet}
-              onRefresh={() => this.getDataTimesheet()}
-              data={this.state.dataTimeSheet}
-              renderItem={({item, index}) => ( 
-            <View style={{marginTop :1, padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
-                <View style={{flex:4}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :85, height :30, justifyContent:"center", alignItems:"center"}}>{item.taskName}
+            <TextInput style={styles.inputtask}
+              value={this.state.TaskName}
+              placeholder="TaskName"
+              onChangeText={(TaskName) => this.setState({ TaskName })}
+              maxLength={20} />
+
+            <TouchableOpacity style={{ marginTop: 20, marginLeft: 10, marginRight: 250 }} onPress={() => this.submitTask()}>
+              <View style={{ backgroundColor: "#006183", padding: 10 }}>
+                <Text style={{ color: "#FFF", textAlign: "center" }}>SUBMIT</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* HISTORY TIMESHEET */}
+          {/* History Today */}
+          <View style={styles.history}>
+            <Text style={styles.historyfont}>History Today</Text>
+            <View style={{ marginBottom: 1, padding: 10, flexDirection: "row" }}>
+              <View style={{ marginLeft: 5 }}>
+                <Text style={{ width: 85, height: 15, justifyContent: "center", alignItems: "center" }}>Task
                   </Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{item.startTime}</Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{item.endTime}</Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>10 </Text>
-                </View>
-                <View>
-                <TouchableOpacity onPress={this._toggleModal}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 20, height:20, tintColor:"#000000"}} source={require("../assets/images/add.png")}/>
-                  </View>
-                </TouchableOpacity>
-                {/* Pop Up Add*/}
-                <Dialog.Container visible={this.state.isModal}>
-                    <Dialog.Title>Add Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} onChangeText={(task) => this.handleTask(task)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} onChangeText={(start) => this.handleStart(start)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} onChangeText={(end) => this.handleEnd(end)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} onChangeText={(total) => this.handleTotal(total)}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={this.toggleModal} />
-                </Dialog.Container>
-                </View>
-                <TouchableOpacity onPress={this._toggleModal}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/edit.png")}/>
-                  </View>
-                </TouchableOpacity>
-                {/* Pop Up Edit */}
-                <View>
-                <Dialog.Container visible={this.state.isModalVisible}>
-                    <Dialog.Title>Edit Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} onChangeText={(task) => this.handleTask(task)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} onChangeText={(start) => this.handleStart(start)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} onChangeText={(end) => this.handleEnd(end)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} onChangeText={(total) => this.handleTotal(total)}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={this._toggleModal} />
-                </Dialog.Container>
-                </View>
-                <TouchableOpacity onPress={() => this.deleteTask(this.state.data[index])}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/delete.png")}/>
-                  </View>
-                </TouchableOpacity>
               </View>
-             )}
-             />
-          </View> 
+              <View style={{ marginLeft: 5 }}>
+                <Text style={{ width: 40, height: 15 }}>Start</Text>
               </View>
-              
-              {/* History Yesterday */}
-              <View style={styles.history}>
-                <Text style={styles.historyfont}>History Yesterday</Text>
-                <View style={{marginBottom :1, padding:10, flexDirection: "row"}}>
-                <View style={{marginLeft :5}}>
-                  <Text style={{width :85, height :15, justifyContent:"center", alignItems:"center"}}>Task
+              <View style={{ marginLeft: 8 }}>
+                <Text style={{ width: 40, height: 15 }}>End </Text>
+              </View>
+              <View style={{ marginLeft: 5 }}>
+                <Text style={{ width: 35, height: 15 }}>Total </Text>
+              </View>
+            </View>
+            {/*Label*/}
+            <View>
+              <FlatList
+                refreshing={this.state.loadingTimesheet}
+                onRefresh={() => this.getDataTimesheet()}
+                data={this.state.dataTimeSheet}
+                renderItem={({ item, index }) => (
+                  <View style={{ marginTop: 1, padding: 10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row" }}>
+                    <View style={{ flex: 4 }}>
+                      <Text style={{ borderRadius: 1, borderWidth: 1, width: 85, height: 30, justifyContent: "center", alignItems: "center" }}>{item.taskName}
+                      </Text>
+                    </View>
+                    <View style={{ flex: 2 }}>
+                      <Text style={{ borderRadius: 1, borderWidth: 1, width: 40, height: 30 }}>{item.startTime}</Text>
+                    </View>
+                    <View style={{ flex: 2 }}>
+                      <Text style={{ borderRadius: 1, borderWidth: 1, width: 40, height: 30 }}>{item.endTime}</Text>
+                    </View>
+                    <View style={{ flex: 2 }}>
+                      <Text style={{ borderRadius: 1, borderWidth: 1, width: 30, height: 30 }}>10 </Text>
+                    </View>
+                    <View>
+                      <TouchableOpacity onPress={this.toggleModal}>
+                        <View style={{ padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                          <Image style={{ width: 20, height: 20, tintColor: "#000000" }} source={require("../assets/images/add.png")} />
+                        </View>
+                      </TouchableOpacity>
+                      {/* Pop Up Add*/}
+                      <Dialog.Container visible={this.state.isModal}>
+                        <Dialog.Title>Add Task</Dialog.Title>
+                        <Dialog.Input label="Task" style={{ borderWidth: 1 }} onChangeText={(task) => this.handleTask(task)}
+                        ></Dialog.Input>
+                        <Text>Start Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.startTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Start Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ startTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+                        <Text>End Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.endTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Finish Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ endTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+
+                        <Dialog.Input label="Total" style={{ borderWidth: 1 }} onChangeText={(total) => this.handleTotal(total)}
+                        ></Dialog.Input>
+
+                        <Dialog.Button label="Save" onPress={this.toggleModal} />
+                      </Dialog.Container>
+                    </View>
+                    <TouchableOpacity onPress={this._toggleModal}>
+                      <View style={{ padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                        <Image style={{ width: 15, height: 15, tintColor: "#000000" }} source={require("../assets/images/edit.png")} />
+                      </View>
+                    </TouchableOpacity>
+                    {/* Pop Up Edit */}
+                    <View>
+                      <Dialog.Container visible={this.state.isModalVisible}>
+                        <Dialog.Title>Edit Task</Dialog.Title>
+                        <Dialog.Input label="Task" style={{ borderWidth: 1 }} onChangeText={(task) => this.handleTask(task)}
+                        ></Dialog.Input>
+                        <Text>Start Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.startTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Start Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ startTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+                        <Text>End Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.endTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Finish Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ endTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+                        <Dialog.Input label="Total" style={{ borderWidth: 1 }} onChangeText={(total) => this.handleTotal(total)}
+                        ></Dialog.Input>
+                        <Dialog.Button label="Save" onPress={this._toggleModal} />
+                      </Dialog.Container>
+                    </View>
+                    <TouchableOpacity onPress={() => this.deleteTask(this.state.data[index])}>
+                      <View style={{ padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                        <Image style={{ width: 15, height: 15, tintColor: "#000000" }} source={require("../assets/images/delete.png")} />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              />
+            </View>
+          </View>
+
+          {/* History Yesterday */}
+          <View style={styles.history}>
+            <Text style={styles.historyfont}>History Yesterday</Text>
+            <View style={{ marginBottom: 1, padding: 10, flexDirection: "row" }}>
+              <View style={{ marginLeft: 5 }}>
+                <Text style={{ width: 85, height: 15, justifyContent: "center", alignItems: "center" }}>Task
                   </Text>
-                </View>
-                <View style={{marginLeft :5}}>
-                  <Text style={{width :40, height :15}}>Start</Text>
-                </View>
-                <View style={{marginLeft :8}}>
-                  <Text style={{ width :40, height :15}}>End </Text>
-                </View>
-                <View style={{marginLeft :5}}>
-                  <Text style={{ width :35, height :15}}>Total </Text>
-                </View>
-                </View>
-                <View style={{marginBottom :5, padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
-                <View style={{flex:4}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :85, height :30, justifyContent:"center", alignItems:"center", position: "absolute"}}>100
+              </View>
+              <View style={{ marginLeft: 5 }}>
+                <Text style={{ width: 40, height: 15 }}>Start</Text>
+              </View>
+              <View style={{ marginLeft: 8 }}>
+                <Text style={{ width: 40, height: 15 }}>End </Text>
+              </View>
+              <View style={{ marginLeft: 5 }}>
+                <Text style={{ width: 35, height: 15 }}>Total </Text>
+              </View>
+            </View>
+            <View style={{ marginBottom: 5, padding: 10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row" }}>
+              <View style={{ flex: 4 }}>
+                <Text style={{ borderRadius: 1, borderWidth: 1, width: 85, height: 30, justifyContent: "center", alignItems: "center", position: "absolute" }}>100
                   </Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>12.30</Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>24.30 </Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>10 </Text>
-                </View>
-                <TouchableOpacity onPress={this._toggleModal}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 20, height:20, tintColor:"#000000"}} source={require("../assets/images/add.png")}/>
-                  </View>
-                </TouchableOpacity>
-                {/* Pop Up Add */}
-                <Dialog.Container visible={this.state.isModalVisible}>
-                    <Dialog.Title>Add Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} onChangeText={(task) => this.handleTask(task)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} onChangeText={(start) => this.handleStart(start)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} onChangeText={(end) => this.handleEnd(end)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} onChangeText={(total) => this.handleTotal(total)}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={this._toggleModal} />
-                </Dialog.Container>
-                <TouchableOpacity onPress={this._toggleModal}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/edit.png")}/>
-                  </View>
-                </TouchableOpacity>
-                <Dialog.Container visible={this.state.isModalVisible}>
-                    <Dialog.Title>Edit Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} onChangeText={(task) => this.handleTask(task)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} onChangeText={(start) => this.handleStart(start)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} onChangeText={(end) => this.handleEnd(end)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} onChangeText={(total) => this.handleTotal(total)}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={this._toggleModal} />
-                </Dialog.Container>
-                <TouchableOpacity onPress={() => this.deleteTask(this.state.data[index])}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/delete.png")}/>
-                  </View>
-                </TouchableOpacity>
               </View>
+              <View style={{ flex: 2 }}>
+                <Text style={{ borderRadius: 1, borderWidth: 1, width: 40, height: 30 }}>12.30</Text>
               </View>
-              {/* <View>
+              <View style={{ flex: 2 }}>
+                <Text style={{ borderRadius: 1, borderWidth: 1, width: 40, height: 30 }}>24.30 </Text>
+              </View>
+              <View style={{ flex: 2 }}>
+                <Text style={{ borderRadius: 1, borderWidth: 1, width: 30, height: 30 }}>10 </Text>
+              </View>
+              <TouchableOpacity onPress={this.toggleModal}>
+                <View style={{ padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                  <Image style={{ width: 20, height: 20, tintColor: "#000000" }} source={require("../assets/images/add.png")} />
+                </View>
+              </TouchableOpacity>
+              {/* Pop Up Add */}
+              <Dialog.Container visible={this.state.isModalVisible}>
+                <Dialog.Title>Add Task</Dialog.Title>
+                <Dialog.Input label="Task" style={{ borderWidth: 1 }} onChangeText={(task) => this.handleTask(task)}
+                ></Dialog.Input>
+                <Text>Start Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.startTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Start Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ startTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+                        <Text>End Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.endTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Finish Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ endTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+                <Dialog.Input label="Total" style={{ borderWidth: 1 }} onChangeText={(total) => this.handleTotal(total)}
+                ></Dialog.Input>
+                <DatePicker
+                  style={{ width: 350 }}
+                  date={this.state.startTime}
+                  mode="time"
+                  format="H:mm"
+                  placeholder="Start Time"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  onDateChange={(date) => { this.setState({ startTime: date }) }}
+                  customStyles={{
+                    dateIcon: {
+                      position: 'absolute',
+                      left: 0,
+                      top: 4,
+                      marginLeft: 0
+                    },
+                    dateInput: {
+                      marginLeft: 36
+                    }
+                    // ... You can check the source to find the other keys.
+                  }}
+                />
+                <Dialog.Button label="Save" onPress={this._toggleModal} />
+              </Dialog.Container>
+              <TouchableOpacity onPress={this._toggleModal}>
+                <View style={{ padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                  <Image style={{ width: 15, height: 15, tintColor: "#000000" }} source={require("../assets/images/edit.png")} />
+                </View>
+              </TouchableOpacity>
+              <Dialog.Container visible={this.state.isModalVisible}>
+                <Dialog.Title>Edit Task</Dialog.Title>
+                <Dialog.Input label="Task" style={{ borderWidth: 1 }} onChangeText={(task) => this.handleTask(task)}
+                ></Dialog.Input>
+                <Text>Start Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.startTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Start Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ startTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+                        <Text>End Time</Text>
+                        <DatePicker
+                          style={{ width: 350 }}
+                          date={this.state.endTime}
+                          mode="time"
+                          format="H:mm"
+                          placeholder="Finish Time"
+                          confirmBtnText="Confirm"
+                          cancelBtnText="Cancel"
+                          onDateChange={(date) => { this.setState({ endTime: date }) }}
+                          customStyles={{
+                            dateIcon: {
+                              borderWidth: 0,
+                              borderStyle: null,
+                              height: 0,
+                              width: 0,
+                            }
+                          }}
+                        />
+                <Dialog.Input label="Total" style={{ borderWidth: 1 }} onChangeText={(total) => this.handleTotal(total)}
+                ></Dialog.Input>
+                <Dialog.Button label="Save" onPress={this._toggleModal} />
+              </Dialog.Container>
+              <TouchableOpacity onPress={() => this.deleteTask(this.state.data[index])}>
+                <View style={{ padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                  <Image style={{ width: 15, height: 15, tintColor: "#000000" }} source={require("../assets/images/delete.png")} />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+          {/* <View>
               <TouchableOpacity onPress={this._toggleModal}>
           <Text>Show Dialog</Text>
         </TouchableOpacity>
@@ -460,8 +621,8 @@ deleteItemById(id){
           <Dialog.Button label="Delete" onPress={this._toggleModal} />
         </Dialog.Container>
       </View> */}
-    </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
     );
   }
 }
@@ -471,16 +632,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 0.5,
     borderColor: '#d6d7da',
-    marginTop : 50,
-    marginLeft :10,
+    marginTop: 50,
+    marginLeft: 10,
   },
-  historyfont:{
-    fontSize : 20
+  historyfont: {
+    fontSize: 20
   },
   title: {
     fontSize: 15,
     fontWeight: 'bold',
-    color:'#fff'
+    color: '#fff'
   },
 
   view: {
@@ -500,25 +661,25 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: '#000066',
     borderWidth: 1
- }, 
- inputtask: {
-  margin: 10,
-  marginTop: 5,
-  height: 40,
-  borderColor: '#000066',
-  borderWidth: 1
-}, 
- textInput: {
-  borderColor: '#CCCCCC',
-  borderTopWidth: 1,
-  borderBottomWidth: 1,
-  height: 50,
-  fontSize: 25,
-  paddingLeft: 20,
-  paddingRight: 20
-},
+  },
+  inputtask: {
+    margin: 10,
+    marginTop: 5,
+    height: 40,
+    borderColor: '#000066',
+    borderWidth: 1
+  },
+  textInput: {
+    borderColor: '#CCCCCC',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    height: 50,
+    fontSize: 25,
+    paddingLeft: 20,
+    paddingRight: 20
+  },
 
-touch1:{
-}
+  touch1: {
+  }
 
 });

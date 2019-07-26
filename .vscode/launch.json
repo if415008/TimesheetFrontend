@@ -10,8 +10,6 @@
             "type": "reactnative",
             "request": "launch",
             "platform": "android"
-<<<<<<< HEAD
-=======
         },
         {
             "name": "Debug iOS",
@@ -19,7 +17,6 @@
             "type": "reactnative",
             "request": "launch",
             "platform": "ios"
->>>>>>> 974390dfa4d2573b938c1e2ff4675a1a3cd2eb23
         }
     ]
 }

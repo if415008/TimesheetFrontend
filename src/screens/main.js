@@ -5,7 +5,7 @@ import Moment from 'moment'
 import { Calendar } from 'react-native-calendars';
 //import DatePicker from 'react-native-datepicker';
 import Calendar2 from 'react-native-calendar-select';
-import PropTypes from 'prop-types';
+
 
 export default class main extends Component {
   constructor(props) {
@@ -82,28 +82,30 @@ export default class main extends Component {
     return (
       <View>
         <Calendar
-
-          markedDates={{
-            minDate: { marked: true, dotColor: 'red' }
-          }}
-
           minDate={Moment().startOf('day') - 1}
           maxDate={new Date()}
-          onDayPress={this.onDayPress}
-          style={styles.calendar}
-          hideExtraDays
-          markedDates={{ [this.state.selected]: { selected: true } }}
           theme={{
-            selectedDayBackgroundColor: 'green',
-            todayTextColor: 'green',
-            arrowColor: 'green',
+            calendarBackground: 'white',
+            selectedDayTextColor: 'white',
+            dayTextColor: 'red',
+            textDisabledColor: '#d9e1e8',
+            dotColor: '#00adf5',
+            selectedDotColor: 'white'
           }}
+          onDayPress={this.onDayPress}
+          style={{
+            marginTop: 40,
+            height: 350,
+            borderWidth: 1
+          }}
+          markedDates={this.state.selectedDay}
         />
+
         <View>
-        <Text>Export Your Timesheet</Text>
+          <Text>Export Your Timesheet</Text>
         </View>
-        
-        <Button style={{backgroundColor: '#424242', color: 'yellow'}}  title="Select Date Period" onPress={this.openCalendar}></Button>
+
+        <Button style={{ backgroundColor: '#424242', color: 'yellow' }} title="Select Date Period" onPress={this.openCalendar}></Button>
         <Calendar2
           i18n="en"
           ref={(calendar) => { this.calendar = calendar; }}
@@ -120,8 +122,6 @@ export default class main extends Component {
   }
 }
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -133,6 +133,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5
   },
-  buttonContainer:{
+  buttonContainer: {
   }
 });
