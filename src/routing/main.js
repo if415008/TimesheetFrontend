@@ -6,6 +6,7 @@ import createScreen from '../screens/create'
 import detailScreen from '../screens/detail'
 import editScreen from '../screens/edit'
 import profileScreen from '../screens/profile'
+import exportScreen from '../screens/exportTimesheet'
 
 const HeaderStyle = () => ({
   headerStyle: {
@@ -54,6 +55,9 @@ export default Main = createStackNavigator({
   },
   ProfileScreen: {
     screen: profileScreen
+  },
+  ExportScreen: {
+    screen: exportScreen
   }
 },
   {

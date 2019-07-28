@@ -1,5 +1,5 @@
 export default {
-  RESOURCE: "http://11.11.7.45:42343/api/",
+  RESOURCE: "http://192.168.100.15:42343/api/",
 
   //EMPLOYEE_DETAIL
   ENDPOINT_GET_EMPLOYEE_DETAIL: 'employeeDetails',
