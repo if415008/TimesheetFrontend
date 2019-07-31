@@ -134,8 +134,6 @@ getDataTimesheet(){
   })
 }
 
-
-
 deleteTimesheet(timesheet){
   let id = timesheet.id
 
@@ -173,6 +171,8 @@ deleteItemById(id){
   }
 
   startTimeSheet(index){
+    let taskId = this.state.data[index].id
+
     let start = {
      // "timesheetDate": this.state.StartTime,
       "startTime": Moment().format("hh:mm"),
@@ -184,14 +184,23 @@ deleteItemById(id){
       "employeeId": 1,
       // "projectId": 1,
       "sprintId": this.state.data[index].sprintId,
-      "taskId": this.state.data[index].id
+      "taskId": taskId
     }
 
     Resource.createTimesheet(start)
     .then((res) => {
       console.log(res)
-      this.resetForm();
-      this.getDataTimesheet();
+      
+      Resource.startTask(taskId).then((r) => {
+        console.log("starttask")
+        console.log(r)
+
+        this.resetForm();
+        this.getDataTimesheet();
+
+      }).catch((e) => {
+        alert(JSON.stringify(e))
+      })
       // alert("Mulai")
     })
     .catch((err) => {
@@ -203,7 +212,8 @@ deleteItemById(id){
     let stop = {
       "employeeId": 1,
       "sprintId": this.state.data[index].sprintId,
-      "taskId": this.state.data[index].id
+      //"taskId": this.state.data[index].id
+      "taskId": taskId
     }
 
     Resource.stopTimesheet(stop)
@@ -235,9 +245,10 @@ deleteItemById(id){
     
     Resource.getTask()
     .then((res) => {
+      this.setState({loadingTimesheet: false})
       let started = []
       res.data.map((d) => {
-        started.push(false)
+        started.push(d.flag)
       })
 
       this.setState({loading: false, data: res.data, isStarted: started})
@@ -247,7 +258,7 @@ deleteItemById(id){
     })
   }
 
-  deleteTask(task){
+  deteleTask(task){
     let id = task.id
 
     Resource.deteleTask(id)
@@ -398,7 +409,7 @@ deleteItemById(id){
                     <Dialog.Button label="Save" onPress={() => this.submitTask()} />
                 </Dialog.Container>
                 </View>
-                <TouchableOpacity onPress={() => this.deleteTask(this.state.data[index])}>
+                <TouchableOpacity onPress={() => this.deleteTimesheet+(this.state.dataTimeSheet[index])}>
                   <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
                     <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/delete.png")}/>
                   </View>
@@ -410,79 +421,7 @@ deleteItemById(id){
               </View>
               
               {/* History Yesterday */}
-              <View style={styles.history}>
-                <Text style={styles.historyfont}>History Yesterday</Text>
-                <View style={{marginBottom :1, padding:10, flexDirection: "row"}}>
-                <View style={{marginLeft :5}}>
-                  <Text style={{width :85, height :15, justifyContent:"center", alignItems:"center"}}>Task
-                  </Text>
-                </View>
-                <View style={{marginLeft :5}}>
-                  <Text style={{width :40, height :15}}>Start</Text>
-                </View>
-                <View style={{marginLeft :8}}>
-                  <Text style={{ width :40, height :15}}>End </Text>
-                </View>
-                <View style={{marginLeft :5}}>
-                  <Text style={{ width :35, height :15}}>Total </Text>
-                </View>
-                </View>
-                <View style={{marginBottom :5, padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
-                <View style={{flex:4}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :85, height :30, justifyContent:"center", alignItems:"center", position: "absolute"}}>100
-                  </Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>12.30</Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>24.30 </Text>
-                </View>
-                <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>10 </Text>
-                </View>
-                <TouchableOpacity onPress={this._toggleModal}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 20, height:20, tintColor:"#000000"}} source={require("../assets/images/add.png")}/>
-                  </View>
-                </TouchableOpacity>
-                {/* Pop Up Add */}
-                <Dialog.Container visible={this.state.isModalVisible}>
-                    <Dialog.Title>Add Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} onChangeText={(task) => this.handleTask(task)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} onChangeText={(start) => this.handleStart(start)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} onChangeText={(end) => this.handleEnd(end)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} onChangeText={(total) => this.handleTotal(total)}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={this._toggleModal} />
-                </Dialog.Container>
-                <TouchableOpacity onPress={this._toggleModal}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/edit.png")}/>
-                  </View>
-                </TouchableOpacity>
-                <Dialog.Container visible={this.state.isModalVisible}>
-                    <Dialog.Title>Edit Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} onChangeText={(task) => this.handleTask(task)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} onChangeText={(start) => this.handleStart(start)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} onChangeText={(end) => this.handleEnd(end)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} onChangeText={(total) => this.handleTotal(total)}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={this._toggleModal} />
-                </Dialog.Container>
-                <TouchableOpacity onPress={() => this.deleteTask(this.state.data[index])}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/delete.png")}/>
-                  </View>
-                </TouchableOpacity>
-              </View>
-              </View>
+              
               {/* <View>
               <TouchableOpacity onPress={this._toggleModal}>
           <Text>Show Dialog</Text>
