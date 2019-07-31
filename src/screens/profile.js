@@ -22,7 +22,9 @@ export default class profile extends Component {
       flag: false,
       loading: true,
       loadingTimesheet: true,
-      data: []
+      data: [],
+      show: true,
+
     }
   }
 
@@ -36,7 +38,7 @@ export default class profile extends Component {
     state = {
       isModal: false
     };
-  
+
   toggleModal = () =>
       this.setState({ isModal: !this.state.isModal })
 
@@ -136,11 +138,11 @@ getDataTimesheet(){
 
 deleteTimesheet(timesheet){
   let id = timesheet.id
-
+  // alert(ID)
   Resource.deleteTimesheet(id)
   .then((res) => {
     alert("Berhasil di delete")
-    this.deleteItemById(timesheet.id)
+    // this.deleteItemById(timesheet.id)
   })
   .catch((err) => {
     alert(err)
@@ -176,7 +178,7 @@ deleteItemById(id){
     let start = {
      // "timesheetDate": this.state.StartTime,
       "startTime": Moment().format("hh:mm"),
-      // "endTime": null,
+       "endTime": null,
       // "totalTimeByTask": this.state.TotalTimeByTask,
       // "totalTimeToday": this.state.TotalTimeToday,
       "taskName": this.state.TaskName,
@@ -212,8 +214,7 @@ deleteItemById(id){
     let stop = {
       "employeeId": 1,
       "sprintId": this.state.data[index].sprintId,
-      //"taskId": this.state.data[index].id
-      "taskId": taskId
+      "taskId": this.state.data[index].id
     }
 
     Resource.stopTimesheet(stop)
@@ -338,10 +339,10 @@ deleteItemById(id){
                   <Text style={{width :85, height :15, justifyContent:"center", alignItems:"center"}}>Task
                   </Text>
                 </View>
-                <View style={{marginLeft :20}}>
+                <View style={{marginLeft :5}}>
                   <Text style={{width :40, height :15}}>Start</Text>
                 </View>
-                <View style={{marginLeft :20}}>
+                <View style={{marginLeft :8}}>
                   <Text style={{ width :40, height :15}}>End </Text>
                 </View>
                 <View style={{marginLeft :5}}>
@@ -370,11 +371,11 @@ deleteItemById(id){
                   <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>{item.totalTimeToday}</Text>
                 </View>
                 <View>
-                {/* <TouchableOpacity onPress={this._toggleModal}>
+                <TouchableOpacity onPress={this.stopTimeSheet}>
                   <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 20, height:20, tintColor:"#000000"}} source={require("../assets/images/add.png")}/>
+                    <Image style={{width: 20, height:20}} source={require("../assets/images/stop.png")}/>
                   </View>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
                 {/* Pop Up Add*/}
                 {/* <Dialog.Container visible={this.state.isModal}>
                     <Dialog.Title>Add Task</Dialog.Title>
@@ -389,11 +390,16 @@ deleteItemById(id){
                     <Dialog.Button label="Save" onPress={this.toggleModal} />
                 </Dialog.Container> */}
                 </View>
-                <TouchableOpacity onPress={this._toggleModal}>
-                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/edit.png")}/>
-                  </View>
-                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                      this.props.navigation.navigate("EditScreen", {
+                        data: this.state.data[index]
+                        //  data: alert(JSON.stringify(this.state.data[index]))
+                      })
+                    }}>
+                      <View style={{padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                        <Image style={{ width: 13, height: 13, tintColor: "#000000" }} source={require("../assets/images/edit.png")} />
+                      </View>
+                    </TouchableOpacity>
                 {/* Pop Up Edit */}
                 <View>
                 <Dialog.Container visible={this.state.isModalVisible}>
@@ -409,7 +415,7 @@ deleteItemById(id){
                     <Dialog.Button label="Save" onPress={() => this.submitTask()} />
                 </Dialog.Container>
                 </View>
-                <TouchableOpacity onPress={() => this.deleteTimesheet+(this.state.dataTimeSheet[index])}>
+                <TouchableOpacity onPress={() => this.deleteTimesheet(this.state.dataTimeSheet[index])}>
                   <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
                     <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/delete.png")}/>
                   </View>

@@ -184,7 +184,7 @@ class Resource {
       "Content-Type": "application/json",
     }
 
-    let endPoint = URI.RESOURCE + URI.ENDPOINT_DELETE_TIMESHEET.replace(/{(timesheetId)}/, timesheetId)
+    let endPoint = URI.RESOURCE + URI.ENDPOINT_DELETE_TIMESHEET.replace(/{(id)}/, timesheetId)
     let res = await Request.delete(endPoint, header);
     
     return new Promise((resolve, reject) => {

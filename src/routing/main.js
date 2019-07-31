@@ -58,6 +58,9 @@ export default Main = createStackNavigator({
   },
   ExportScreen: {
     screen: exportScreen
+  },
+  EditScreen: {
+    screen: editScreen
   }
 },
   {
