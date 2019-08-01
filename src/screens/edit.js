@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 import Resource from '../network/Resource'
-import Moment from 'moment'
+import moment from 'moment'
 
 const myStyle = StyleSheet.create({
   form: {
@@ -28,8 +28,9 @@ export default class edit extends Component {
       isStarted: [],
       SprintId: 1,
       taskName: this.data.taskName,
-      startTime: Moment(this.data.StartTime).format("HH:mm"),
-      endTime: Moment(this.data.endTime).format("HH:mm"),
+      startTime: moment(this.data.startTime).format("HH:mm"),
+      endTime: moment(this.data.endTime).format("HH:mm"),
+      totalTimeToday: this.data.totalTimeToday,
       loading: true,
       loadingTimesheet: true,
       data: [],
@@ -40,15 +41,16 @@ export default class edit extends Component {
   submitTask() {
     let body = {
       "taskName" : this.state.taskName,
-      "StartTime": this.state.startTime,
-      "EndTime": this.state.endTime
+      "startTime": this.state.startTime,
+      "endTime": this.state.endTime,
+      "TotalTimeToday": this.state.totalTimeToday
     }
 
     Resource.editTimesheet(body, this.data.id)
       .then((res) => {
         this.resetForm();
-        // alert("Edit Sukses")
-        alert(JSON.stringify(body))
+         alert("Edit Sukses")
+        //alert(JSON.stringify(body))
       })
       .catch((err) => {
         alert(JSON.stringify(err))
@@ -57,10 +59,11 @@ export default class edit extends Component {
 
   resetForm() {
     this.setState({
-      // SprintId : 1,
-      taskName: "",
+      SprintId : 1,
+      //taskName: "",
       StartTime: "",
-      EndTime: ""
+      EndTime: "",
+      TotalTimeToday: ''
       
     })
     // alert(JSON.stringify(resetForm))
@@ -79,25 +82,28 @@ export default class edit extends Component {
         />
  */}
 
-        <View>
+        {/* <View>
           <TextInput style={myStyle.form}
           value = {this.state.taskName}
           onChangeText = {(taskName)=> this.setState({taskName})}>
           </TextInput>
-        </View>
+        </View> */}
         <View>
-          <TextInput style={myStyle.form} value={this.state.StartTime}
-          onChangeText = {(StartTime)=> this.setState({StartTime})}>
+          <TextInput style={myStyle.form} value={this.state.startTime}
+          onChangeText = {(startTime)=> this.setState({startTime})}>
           </TextInput>
         </View>
         <View>
-          <TextInput style={myStyle.form} value={this.state.EndTime}
-          onChangeText = {(EndTime)=> this.setState({EndTime})}>
+          <TextInput style={myStyle.form} value={this.state.endTime}
+          onChangeText = {(endTime)=> this.setState({endTime})}>
           </TextInput>
         </View>
-        <View>
-          <TextInput style={myStyle.form} >10 </TextInput>
-        </View>
+        
+        {/* <View>
+          <TextInput style={myStyle.form} value={this.state.totalTimeToday}
+          onChangeText = {(totalTimeToday)=> this.setState({totalTimeToday})}>
+          </TextInput>
+        </View> */}
         <TouchableOpacity style={{ marginTop: 20 }} onPress={() => this.submitTask()}>
           <View style={{ backgroundColor: "#F7CA18", padding: 10 }}>
             <Text style={{ color: "#FFF", textAlign: "center" }}>SUBMIT</Text>
