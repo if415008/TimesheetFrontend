@@ -28,8 +28,8 @@ export default class edit extends Component {
       isStarted: [],
       SprintId: 1,
       taskName: this.data.taskName,
-      startTime: this.data.startTime,
-      endTime: this.data.endTime,
+      startTime: Moment(this.data.StartTime).format("HH:mm"),
+      endTime: Moment(this.data.endTime).format("HH:mm"),
       loading: true,
       loadingTimesheet: true,
       data: [],
@@ -86,11 +86,13 @@ export default class edit extends Component {
           </TextInput>
         </View>
         <View>
-          <TextInput style={myStyle.form} value={Moment(this.state.StartTime).format("HH:mm")}>
+          <TextInput style={myStyle.form} value={this.state.StartTime}
+          onChangeText = {(StartTime)=> this.setState({StartTime})}>
           </TextInput>
         </View>
         <View>
-          <TextInput style={myStyle.form} value={Moment(this.state.EndTime).format("HH:mm")}>
+          <TextInput style={myStyle.form} value={this.state.EndTime}
+          onChangeText = {(EndTime)=> this.setState({EndTime})}>
           </TextInput>
         </View>
         <View>

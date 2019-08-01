@@ -77,7 +77,7 @@ class Resource {
       "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
       "Content-Type": "application/json",
     }
-    let endPoint = URI.RESOURCE + URI.ENDPOINT_EDIT_TASK_STOP.replace(/{(taskId)}/, taskId)
+    let endPoint = URI.RESOURCE + URI.ENDPOINT_EDIT_TASK_STOP.replace(/{(id)}/, taskId)
     let res = await Request.post(endPoint, header, null);
     
     return new Promise((resolve, reject) => {
@@ -160,14 +160,14 @@ class Resource {
     });
   }
 
-  async stopTimesheet(body){
+  async stopTimesheet(timesheetId){
     const header = {
       "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
       "Content-Type": "application/json",
     }
-    let endPoint = URI.RESOURCE + URI.ENDPOINT_CREATE_TIMESHEET_STOP.replace(/{(timesheetId)}/, timesheetId)
+    let endPoint = URI.RESOURCE + URI.ENDPOINT_CREATE_TIMESHEET_STOP.replace(/{(id)}/, timesheetId)
 
-    let res = await Request.post(endPoint, header, stop);
+    let res = await Request.post(endPoint, header, null);
     
     return new Promise((resolve, reject) => {
       try{

@@ -16,7 +16,7 @@ export default class profile extends Component {
       TaskName : '',
       TaskId :1,
       StartTime :Moment().format("hh:mm"),
-      EndTime :Moment().format("hh:mm"),
+      endTime :Moment().format("hh:mm"),
       TotalTimeByTask :'',
       TotalTimeToday :'',
       flag: false,
@@ -61,13 +61,13 @@ export default class profile extends Component {
   // TIMESHEET
   //Create Timesheet
   btnPlay(index){
-    if(this.state.isStarted[index]){
+    if(!this.state.isStarted[index]){
       return (
-        <Image style={{width: 35, height:35}} source={require("../assets/images/stop.png")}/>
-      )
-    } else {
-      return (
-        <Image style={{width: 45, height:45, tintColor:"#FFF"}} source={require("../assets/images/play.png")}/>
+        <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
+        <View style={{backgroundColor:"#B22222", padding: 5}}>
+          <Text style={{color:"#FFF", textAlign:"center"}}>START</Text>
+        </View>
+      </TouchableOpacity>
       )
     }
   }
@@ -76,7 +76,7 @@ export default class profile extends Component {
     this.setState({
       // SprintId : 1,
       StartTime : "",
-      EndTime : ""
+      endTime : ""
     })
   }
 
@@ -92,13 +92,6 @@ export default class profile extends Component {
      
       
       // dataTimeSheet.push(newObj);
-    } else {
-
-      this.stopTimeSheet();
-      //panggil endpoint stop
-      startedList[index] = false
-      
-  
     }
 
     this.setState({isStarted : startedList})
@@ -194,8 +187,6 @@ deleteItemById(id){
       console.log(res)
       
       Resource.startTask(taskId).then((r) => {
-        console.log("starttask")
-        console.log(r)
 
         this.resetForm();
         this.getDataTimesheet();
@@ -210,18 +201,21 @@ deleteItemById(id){
     })
   }
 
-  stopTimeSheet(index){
-    let stop = {
-      "employeeId": 1,
-      "sprintId": this.state.data[index].sprintId,
-      "taskId": this.state.data[index].id
-    }
+  stopTimeSheet(timesheet){
 
-    Resource.stopTimesheet(stop)
+    Resource.stopTimesheet(timesheet.id)
     .then((res) => {
-      this.resetForm();
-      this.getDataTimesheet();
-      // alert("Berakhir")
+      
+      Resource.stopTask(timesheet.taskId).then((r) => {
+
+        this.resetForm();
+        this.getData();
+        this.getDataTimesheet();
+
+      }).catch((e) => {
+        alert(JSON.stringify(e))
+      })
+
     })
     .catch((err) => {
       alert(JSON.stringify(err))
@@ -249,7 +243,7 @@ deleteItemById(id){
       this.setState({loadingTimesheet: false})
       let started = []
       res.data.map((d) => {
-        started.push(d.flag)
+        started.push(d.isStarted)
       })
 
       this.setState({loading: false, data: res.data, isStarted: started})
@@ -303,17 +297,13 @@ deleteItemById(id){
                 <View style={{flex:5}}>
                   <Text>{item.taskName}</Text>
                 </View>
-                <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
+                {/* <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
                 <View style={{backgroundColor:"#B22222", padding: 5}}>
                   <Text style={{color:"#FFF", textAlign:"center"}}>START</Text>
                  
                   </View>
-                </TouchableOpacity>
-                {/* <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
-                  <View style={{backgroundColor:"#006183", padding:3, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
-                    {this.btnPlay(index)}
-                  </View>
                 </TouchableOpacity> */}
+                {this.btnPlay(index)}
                 </View>
                 </ScrollView>
               )}
@@ -377,7 +367,7 @@ deleteItemById(id){
                   <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>{item.totalTimeToday}</Text>
                 </View>
                 <View>
-                <TouchableOpacity onPress={this.stopTimeSheet}>
+                <TouchableOpacity style={{display:this.state.dataTimeSheet[index].isStarted ? "flex" : "none"}} onPress={() => this.stopTimeSheet(this.state.dataTimeSheet[index])}>
                   <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
                     <Image style={{width: 20, height:20}} source={require("../assets/images/stop.png")}/>
                   </View>
@@ -398,7 +388,7 @@ deleteItemById(id){
                 </View>
                 <TouchableOpacity onPress={() => {
                       this.props.navigation.navigate("EditScreen", {
-                        data: this.state.data[index]
+                        data: this.state.dataTimeSheet[index]
                         //  data: alert(JSON.stringify(this.state.data[index]))
                       })
                     }}>
