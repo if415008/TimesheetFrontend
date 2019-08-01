@@ -27,8 +27,7 @@ export default class edit extends Component {
       currentTime: 0,
       isStarted: [],
       SprintId: 1,
-      TaskName: this.data.TaskName,
-      TaskId: 1,
+      taskName: this.data.taskName,
       startTime: this.data.startTime,
       endTime: this.data.endTime,
       loading: true,
@@ -40,17 +39,16 @@ export default class edit extends Component {
 
   submitTask() {
     let body = {
+      "taskName" : this.state.taskName,
       "StartTime": this.state.startTime,
-      "EndTime": this.state.endTime,
-      "TaskId": this.state.TaskId
+      "EndTime": this.state.endTime
     }
-
-
 
     Resource.editTimesheet(body, this.data.id)
       .then((res) => {
         this.resetForm();
-        alert("Edit Sukses")
+        // alert("Edit Sukses")
+        alert(JSON.stringify(body))
       })
       .catch((err) => {
         alert(JSON.stringify(err))
@@ -60,27 +58,39 @@ export default class edit extends Component {
   resetForm() {
     this.setState({
       // SprintId : 1,
+      taskName: "",
       StartTime: "",
-      EndTime: "",
-      TaskName: ""
+      EndTime: ""
+      
     })
-    alert(JSON.stringify(resetForm))
+    // alert(JSON.stringify(resetForm))
   }
 
 
   render() {
     return (
       <View style={{ padding: 30 }}>
+
+        {/* <TextInput
+          style={myStyle.form}
+          value={this.state.task_due}
+          onChangeText={(task_due) => this.setState({ task_due })}
+          placeholder="Task Due"
+        />
+ */}
+
         <View>
-          <TextInput style={myStyle.form} >{this.data.taskName}
+          <TextInput style={myStyle.form}
+          value = {this.state.taskName}
+          onChangeText = {(taskName)=> this.setState({taskName})}>
           </TextInput>
         </View>
         <View>
-          <TextInput style={myStyle.form} value={Moment(this.data.StartTime).format("HH:mm")}>
+          <TextInput style={myStyle.form} value={Moment(this.state.StartTime).format("HH:mm")}>
           </TextInput>
         </View>
         <View>
-          <TextInput style={myStyle.form} value={Moment(this.data.EndTime).format("HH:mm")}>
+          <TextInput style={myStyle.form} value={Moment(this.state.EndTime).format("HH:mm")}>
           </TextInput>
         </View>
         <View>

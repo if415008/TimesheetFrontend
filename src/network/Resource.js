@@ -142,13 +142,13 @@ class Resource {
     });
   }
 
-  async editTimesheet(body, timesheetId){
+  async editTimesheet(body, id){
     const header = {
       "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXJ5YXdhbiIsInN1YiI6MiwiaWF0IjoxNTYxOTE2NzI5LCJleHAiOjMxNzEzMTQzNjcyOX0.JfmOjuyl39_yDsDEj2DjW21Q1QKroxWvRQ3UU5xQnzI",
       "Content-Type": "application/json",
     }
     
-    let endPoint = URI.RESOURCE + URI.ENDPOINT_EDIT_TIMESHEET.replace(/{(timesheetId)}/, timesheetId)
+    let endPoint = URI.RESOURCE + URI.ENDPOINT_EDIT_TIMESHEET.replace(/{(id)}/, id)
     let res = await Request.put(endPoint, header, JSON.stringify(body));
     
     return new Promise((resolve, reject) => {

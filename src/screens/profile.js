@@ -304,10 +304,16 @@ deleteItemById(id){
                   <Text>{item.taskName}</Text>
                 </View>
                 <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
+                <View style={{backgroundColor:"#B22222", padding: 5}}>
+                  <Text style={{color:"#FFF", textAlign:"center"}}>START</Text>
+                 
+                  </View>
+                </TouchableOpacity>
+                {/* <TouchableOpacity style={{marginHorizontal:20}} onPress={() => this.onPlayPress(index)}>
                   <View style={{backgroundColor:"#006183", padding:3, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
                     {this.btnPlay(index)}
                   </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 </View>
                 </ScrollView>
               )}
