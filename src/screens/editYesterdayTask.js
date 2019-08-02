@@ -17,7 +17,7 @@ const myStyle = StyleSheet.create({
 
 
 
-export default class edit extends Component {
+export default class editYesterdayTask extends Component {
 
   constructor(props) {
     super(props)
@@ -100,6 +100,7 @@ export default class edit extends Component {
         <View>
        
         <View>
+          <Text>Start Time</Text>
           <TextInput style={myStyle.form} 
           keyboardType={'numeric'}
           value={this.state.startTime}
@@ -108,6 +109,7 @@ export default class edit extends Component {
         </View>
         </View>
         <View>
+          <Text>End Time</Text>
           <TextInput style={myStyle.form} 
           keyboardType
           ={'numeric'}

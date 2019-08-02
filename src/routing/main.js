@@ -2,11 +2,13 @@ import React, { Component } from 'react'
 import { Text, View } from 'react-native'
 import { createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation'
 import mainScreen from '../screens/main'
-import createScreen from '../screens/create'
+import createScreen from '../screens/createYesterdayTask'
 import detailScreen from '../screens/detail'
 import editScreen from '../screens/edit'
+import editYesterdayTaskScreen from '../screens/editYesterdayTask'
 import profileScreen from '../screens/profile'
 import exportScreen from '../screens/exportTimesheet'
+
 
 const HeaderStyle = () => ({
   headerStyle: {
@@ -61,7 +63,13 @@ export default Main = createStackNavigator({
   },
   EditScreen: {
     screen: editScreen
-  }
+  },
+  CreateScreen: {
+    screen: createScreen
+  },
+  EditYesterdayTaskScreen: {
+    screen: editYesterdayTaskScreen
+  },
 },
   {
     initialRouteName: "MainScreen",

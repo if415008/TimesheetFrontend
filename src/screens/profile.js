@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, TextInput, Image, TouchableOpacity,Button, FormInput, ScrollView, Label, FlatList  } from 'react-native'
+import { Text, View, StyleSheet, TextArea, TextInput, Image, TouchableOpacity,Button, FormInput, ScrollView, Label, FlatList  } from 'react-native'
 import Dialog from "react-native-dialog";
-import Moment from 'moment';
+import moment from 'moment';
 import Resource from '../network/Resource'
 
 export default class profile extends Component {
@@ -15,8 +15,8 @@ export default class profile extends Component {
       SprintId : 1,
       TaskName : '',
       TaskId :1,
-      StartTime :Moment().format("hh:mm"),
-      endTime :Moment().format("hh:mm"),
+      StartTime :moment().format("hh:mm"),
+      endTime :moment().format("hh:mm"),
       TotalTimeByTask :'',
       TotalTimeToday :'',
       flag: false,
@@ -52,7 +52,7 @@ export default class profile extends Component {
     that.setState({
       //Setting the value of the date time
       date:
-        date + '/' + month + '/' + year +' '+' '+ hours + ':'+ min,
+        date + '/' + month + '/' + year,
     });
     this.getData();
     this.getDataTimesheet();
@@ -134,7 +134,7 @@ deleteTimesheet(timesheet){
   // alert(ID)
   Resource.deleteTimesheet(id)
   .then((res) => {
-    alert("Berhasil di delete")
+    alert("Anda yakin ingin menghapusnya?")
     // this.deleteItemById(timesheet.id)
   })
   .catch((err) => {
@@ -170,7 +170,7 @@ deleteItemById(id){
 
     let start = {
      // "timesheetDate": this.state.StartTime,
-      "startTime": Moment().format("hh:mm"),
+      "startTime": moment().format("hh:mm"),
        "endTime": null,
       // "totalTimeByTask": this.state.TotalTimeByTask,
       // "totalTimeToday": this.state.TotalTimeToday,
@@ -258,7 +258,7 @@ deleteItemById(id){
 
     Resource.deteleTask(id)
     .then((res) => {
-      alert("Berhasil di delete")
+      Alert.alert("Berhasil di delete")
       this.deleteItemById(task.id)
     })
     .catch((err) => {
@@ -273,12 +273,13 @@ deleteItemById(id){
 
   render() {
     return (
-      <ScrollView>
+      <ScrollView  refreshing={this.state.loading}
+      onRefresh={() => this.getData()}>
       <View>
          <View style={[styles.view, styles.withBottomBorder]}>
               <Text style={styles.title}> 
               {this.state.date} &nbsp;
-              {this.state.date < 24 ? `Good Morning` : `Good Evening`}
+              {this.state.date < 24 ? `Welcome to Timesheet` : `Welcome to Timesheet`}
               </Text>
       </View> 
 
@@ -291,9 +292,9 @@ deleteItemById(id){
               renderItem={({item, index}) => ( 
                 <ScrollView>
                 <View style={{marginBottom:1, padding:5, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
-                <View style={{flex:1}}>
+                {/* <View style={{flex:1}}>
                   <Text>{item.id}</Text>
-                </View>
+                </View> */}
                 <View style={{flex:5}}>
                   <Text>{item.taskName}</Text>
                 </View>
@@ -317,7 +318,7 @@ deleteItemById(id){
                     value={this.state.TaskName}
                     placeholder="TaskName"
                     onChangeText={(TaskName) => this.setState({TaskName})}
-                    maxLength={20}/>
+                    maxLength={100}/>
                     
                     <TouchableOpacity style={{marginTop: 20, marginLeft:10, marginRight:250}} onPress={() => this.submitTask()}>
           <View style={{backgroundColor:"#006183", padding: 10}}>
@@ -358,10 +359,10 @@ deleteItemById(id){
                   </Text>
                 </View>
                 <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{Moment(item.startTime).format("HH:mm")}</Text>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{moment(item.startTime).format("HH:mm")}</Text>
                 </View>
                 <View style={{flex:2}}>
-                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{Moment(item.endTime).format("HH:mm")}</Text>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{moment(item.endTime).format("HH:mm")}</Text>
                 </View>
                 <View style={{flex:2}}>
                   <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>{item.totalTimeToday}</Text>
@@ -372,19 +373,6 @@ deleteItemById(id){
                     <Image style={{width: 20, height:20}} source={require("../assets/images/stop.png")}/>
                   </View>
                 </TouchableOpacity>
-                {/* Pop Up Add*/}
-                {/* <Dialog.Container visible={this.state.isModal}>
-                    <Dialog.Title>Add Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} onChangeText={(task) => this.handleTask(task)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} onChangeText={(start) => this.handleStart(start)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} onChangeText={(end) => this.handleEnd(end)}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} onChangeText={(total) => this.handleTotal(total)}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={this.toggleModal} />
-                </Dialog.Container> */}
                 </View>
                 <TouchableOpacity onPress={() => {
                       this.props.navigation.navigate("EditScreen", {
@@ -396,21 +384,6 @@ deleteItemById(id){
                         <Image style={{ width: 13, height: 13, tintColor: "#000000" }} source={require("../assets/images/edit.png")} />
                       </View>
                     </TouchableOpacity>
-                {/* Pop Up Edit */}
-                <View>
-                <Dialog.Container visible={this.state.isModalVisible}>
-                    <Dialog.Title>Edit Task</Dialog.Title>
-                    <Dialog.Input label="Task" style={{borderWidth:1}} value={this.state.taskName} onChangeText={(taskName) => this.setState({taskName})}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Start" style={{borderWidth:1}} value={this.state.startTime} onChangeText={(startTime) => this.setState({startTime})}
-                    ></Dialog.Input>
-                    <Dialog.Input label="End" style={{borderWidth:1}} value={this.state.endTime} onChangeText={(endTime) => this.setState({endTime})}
-                    ></Dialog.Input>
-                    <Dialog.Input label="Total" style={{borderWidth:1}} value={this.state.totalTimeToday} onChangeText={(totalTimeToday) => this.setState({totalTimeToday})}
-                    ></Dialog.Input>
-                    <Dialog.Button label="Save" onPress={() => this.submitTask()} />
-                </Dialog.Container>
-                </View>
                 <TouchableOpacity onPress={() => this.deleteTimesheet(this.state.dataTimeSheet[index])}>
                   <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
                     <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/delete.png")}/>
@@ -423,7 +396,87 @@ deleteItemById(id){
               </View>
               
               {/* History Yesterday */}
-              
+              <View style={styles.history}>
+                <Text style={styles.historyfont}>History Yesterday</Text>
+                <View style={{marginBottom :1, padding:10, flexDirection: "row"}}>
+                <View style={{marginLeft :5}}>
+                  <Text style={{width :85, height :15, justifyContent:"center", alignItems:"center"}}>Task
+                  </Text>
+                </View>
+                <View style={{marginLeft :5}}>
+                  <Text style={{width :40, height :15}}>Start</Text>
+                </View>
+                <View style={{marginLeft :8}}>
+                  <Text style={{ width :40, height :15}}>End </Text>
+                </View>
+                <View style={{marginLeft :5}}>
+                  <Text style={{ width :35, height :15}}>Total </Text>
+                </View>
+                </View>
+                <View>
+                <FlatList
+              refreshing={this.state.loadingTimesheet}
+              onRefresh={() => this.getDataTimesheet()}
+              data={this.state.dataTimeSheet}
+              renderItem={({item, index}) => ( 
+              <View style={{marginTop :1, padding:10, borderBottomColor: "#aaa", borderBottomWidth: 1, flexDirection: "row"}}>
+                <View style={{flex:4}}>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :85, height :30, justifyContent:"center", alignItems:"center", position: "absolute"}}>{item.taskName}
+                  </Text>
+                </View>
+                <View style={{flex:2}}>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{moment(item.startTime).format("HH:mm")}</Text>
+                </View>
+                <View style={{flex:2}}>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :40, height :30}}>{moment(item.endTime).format("HH:mm")}</Text>
+                </View>
+                <View style={{flex:2}}>
+                  <Text style={{ borderRadius: 1,borderWidth:1, width :30, height :30}}>{item.totalTimeToday} </Text>
+                </View>
+
+{/* 
+                <TouchableOpacity onPress={() => {
+                      this.props.navigation.navigate("EditScreen", {
+                        data: this.state.dataTimeSheet[index]
+                        //  data: alert(JSON.stringify(this.state.data[index]))
+                      })
+                    }}>
+                      <View style={{padding: 5, justifyContent: "center", alignItems: "center", width: 30, height: 30, borderRadius: 15 }}>
+                        <Image style={{ width: 13, height: 13, tintColor: "#000000" }} source={require("../assets/images/edit.png")} />
+                      </View>
+                    </TouchableOpacity> */}
+
+                    <TouchableOpacity onPress={() => {
+                      this.props.navigation.navigate("CreateScreen", {
+                        data: this.state.dataTimeSheet[index]
+                        //  data: alert(JSON.stringify(this.state.data[index]))
+                      })
+                    }}>
+                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
+                    <Image style={{width: 20, height:20, tintColor:"#000000"}} source={require("../assets/images/add.png")}/>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => {
+                      this.props.navigation.navigate("EditYesterdayTaskScreen", {
+                        data: this.state.dataTimeSheet[index]
+                        //  data: alert(JSON.stringify(this.state.data[index]))
+                      })
+                    }}>
+                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
+                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/edit.png")}/>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => this.deleteTask(this.state.data[index])}>
+                  <View style={{ padding:5, justifyContent:"center", alignItems:"center", width:30, height:30, borderRadius: 15}}>
+                    <Image style={{width: 15, height:15, tintColor:"#000000"}} source={require("../assets/images/delete.png")}/>
+                  </View>
+                </TouchableOpacity>
+              </View>
+               )}
+               />
+            </View> 
+              </View>
               {/* <View>
               <TouchableOpacity onPress={this._toggleModal}>
           <Text>Show Dialog</Text>
